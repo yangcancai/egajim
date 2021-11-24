@@ -1,0 +1,6 @@
+-name ${EGAJIM_NODE_NAME} 
+
+-setcookie ${EGAJIM_COOKIE} 
+
++K true
++A30

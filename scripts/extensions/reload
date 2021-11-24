@@ -1,0 +1,10 @@
+#!/bin/bash
+
+case $1 in
+    help)
+        echo "bin/egajim reload        execute egajim_ctl:reload()"
+        ;;
+    *) ;;
+esac
+R=$(relx_nodetool eval 'egajim_ctl:reload().')
+echo $R

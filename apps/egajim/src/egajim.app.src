@@ -6,7 +6,12 @@
   {applications,
    [kernel,
     stdlib,
-    lager
+    lager,
+    escalus,
+    jsx,
+    gproc,
+    hairnet,
+    observer_cli
    ]},
   {env,[]},
   {modules, []},

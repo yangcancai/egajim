@@ -29,10 +29,11 @@ new_meck() ->
 
 expect() ->
     ok = meck:expect(egajim, test, fun() -> {ok, 1} end).
+
 del_meck() ->
     meck:unload().
 
 handle(_Config) ->
     expect(),
-    ?assertEqual({ok,1}, egajim:test()),
+    ?assertEqual({ok, 1}, egajim:test()),
     ok.

@@ -146,11 +146,11 @@ handle_cast(_Request, State = #egajim_session_state{}) ->
                      {stop, Reason :: term(), NewState :: #egajim_session_state{}}.
 handle_info(ping,
             State =
-                #egajim_session_state{ejabberd_info = #{server := Server, client := Client},
+                #egajim_session_state{ejabberd_info = #{server := _Server, client := _Client},
                                       pong = true}) ->
     timer_ping(),
-    Xml = egajim_xml:ping(Server),
-    send(Client, Xml),
+   %% Xml = egajim_xml:ping(Server),
+    %%send(Client, Xml),
     {noreply, State#egajim_session_state{pong = false}};
 handle_info(ping, State) ->
     {stop, normal, State};

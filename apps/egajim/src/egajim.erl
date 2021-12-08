@@ -27,9 +27,13 @@
 -author("yangcancai").
 
 -export([login/2, run/0, server/1, host/1, port/1, register/2, send/2, add_friend/2,
-         make_all_friends/1, chat/3]).
+         make_all_friends/1, chat/3, agree_friend/2, subscribe_ack/2,
+        interested/2,unblacked/2,uninterested/2,blacked/2, get_rosters/1,
+        nicknamed/3, create_group/2, update_group/3, delete_group/2,
+        in_group/3, out_group/3, get_group/1]).
 
 -include("egajim.hrl").
+-include_lib("exml/include/exml.hrl").
 
 send(Session, Stanza) ->
     egajim_session:cmd(Session, {stanza, Stanza}).
@@ -39,6 +43,44 @@ make_all_friends(L) ->
 
 add_friend(Session, To) ->
     send(Session, escalus_stanza:presence_direct(To, <<"subscribe">>)).
+agree_friend(Session, To) ->
+    send(Session, escalus_stanza:presence_direct(To, <<"subscribed">>)).
+subscribe_ack(Session, To) ->
+    Stanza = roster_iq(<<"subscribe_ack">>, #{jids => [To]}),
+    send(Session, Stanza).
+nicknamed(Session, To, NickName) ->
+    Stanza = escalus_stanza:roster_add_contact(To, [], NickName),
+    send(Session, Stanza).
+interested(Session, To) ->
+    Stanza = roster_iq(<<"add_concern">>, #{jid => To}),
+    send(Session, Stanza).
+uninterested(Session, To) ->
+    Stanza = roster_iq(<<"cancel_concern">>, #{jid => To}),
+    send(Session, Stanza).
+blacked(Session, To) ->
+    Stanza = roster_iq(<<"add_black">>, #{jid => To}),
+    send(Session, Stanza).
+
+unblacked(Session, To) ->
+    Stanza = roster_iq(<<"cancel_black">>, #{jid => To}),
+    send(Session, Stanza).
+
+get_rosters(Session) ->
+    send(Session, escalus_stanza:roster_get(<<"1">>)).
+
+create_group(Session, Name) ->
+    send(Session, roster_iq(<<"create_diy_group">>, #{name => Name})).
+update_group(Session, RgID, Name) ->
+    send(Session, roster_iq(<<"update_diy_group">>, #{name => Name, rgid => RgID})).
+delete_group(Session, RgID) ->
+    send(Session, roster_iq(<<"delete_diy_group">>, #{rgid => RgID})).
+get_group(Session) ->
+    send(Session, roster_iq(<<"get">>, <<"get_diy_groups">>, #{})).
+in_group(Session, To, RgID) ->
+    send(Session, roster_iq(<<"add_to_diy_group">>, #{rgid => RgID, jid => To})).
+out_group(Session, To, RgID) ->
+    send(Session, roster_iq(<<"cancel_diy_group">>, #{rgid => RgID, jid => To})).
+
 
 chat(Session, To, Msg) ->
     send(Session, escalus_stanza:chat_to(To, Msg)).
@@ -110,8 +152,8 @@ server(_) ->
 host(_) ->
     host().
 
-port(<<"aa">>) ->
-    5223;
+% port(<<"aa">>) ->
+    % 5223;
 port(_) ->
     port().
 
@@ -124,3 +166,14 @@ host() ->
 port() ->
     % 5223.
     application:get_env(egajim, ejabberd_port, 5222).
+
+
+roster_iq(QueryType, Data) ->
+    roster_iq(<<"set">>, QueryType, Data).
+roster_iq(Type, QueryType, Data) ->
+    QueryData = [#xmlcdata{content = jsx:encode(Data)}],
+    Query = [#xmlel{name = <<"query">>,
+                    attrs = [{<<"xmlns">>, <<"bx:roster">>},
+                     {<<"query_type">>, QueryType}],
+                     children = QueryData}],
+    escalus_stanza:iq(Type, Query).

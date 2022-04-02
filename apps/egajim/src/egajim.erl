@@ -26,8 +26,8 @@
 
 -author("yangcancai").
 
--export([login/2, run/0, server/1, host/1, port/1, register/2, send/2, add_friend/2,
-         make_all_friends/1, chat/3, agree_friend/2, subscribe_ack/2,
+-export([login/2, run/0, server/1, host/1, port/1, register/0, register/2, send/2, add_friend/2,
+         make_all_friends/1, chat_online/3, chat_offline/3, agree_friend/2, subscribe_ack/2,
         interested/2,unblacked/2,uninterested/2,blacked/2, get_rosters/1,
         nicknamed/3, create_group/2, update_group/3, delete_group/2,
         in_group/3, out_group/3, get_group/1]).
@@ -82,12 +82,14 @@ out_group(Session, To, RgID) ->
     send(Session, roster_iq(<<"cancel_diy_group">>, #{rgid => RgID, jid => To})).
 
 
-chat(Session, To, Msg) ->
-    send(Session, escalus_stanza:chat_to(To, Msg)).
+chat_online(FromSession, ToSession, Msg) ->
+chat_offline(FromSession, egajim_session:jid(ToSession), Msg).
+chat_offline(FromSession, To, Msg) ->
+    send(FromSession, escalus_stanza:chat_to(To, Msg)).
 
 run() ->
     {ok, P} = egajim_session:start(<<"aa">>, <<"123456">>),
-    {ok, P1} = egajim_session:start(<<"tt">>, <<"123456">>),
+    {ok, P1} = egajim_session:start(<<"ttt">>, <<"123456">>),
     % add_friend(P, egajim_session:jid(P1)),
     % make_all_friends([P, P1]),
     {P, P1}.
@@ -96,6 +98,9 @@ run() ->
 
 login(UserName, PassWord) ->
     egajim_session:start_connection(UserName, PassWord).
+register() ->
+    ?MODULE:register(<<"aa">>, <<"123456">>),
+    ?MODULE:register(<<"ttt">>, <<"123456">>).
 
 register(UserID, Pass) ->
     ClientProps = [{server, server()}, {host, host()}, {port, port()}],

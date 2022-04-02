@@ -196,7 +196,7 @@ start_connection(UserName, PassWord) ->
         [{username, UserName},
          {password, PassWord},
          {auth, {egajim_session, auth_sasl_scram_sha1}},
-         %  {type, <<"3">>},
+         {type, <<"3">>},
          {server, egajim:server(UserName)},
          {host, egajim:host(UserName)},
          {starttls, true},

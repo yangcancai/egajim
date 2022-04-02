@@ -30,11 +30,12 @@
          make_all_friends/1, chat_online/3, chat_offline/3, agree_friend/2, subscribe_ack/2,
         interested/2,unblacked/2,uninterested/2,blacked/2, get_rosters/1,
         nicknamed/3, create_group/2, update_group/3, delete_group/2,
-        in_group/3, out_group/3, get_group/1]).
+        in_group/3, out_group/3, get_group/1, login_testuser001/0]).
 
 -include("egajim.hrl").
 -include_lib("exml/include/exml.hrl").
-
+login_testuser001() ->
+    egajim_session:start(<<"testuser001">>, <<"123456">>).
 send(Session, Stanza) ->
     egajim_session:cmd(Session, {stanza, Stanza}).
 

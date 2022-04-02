@@ -35,8 +35,8 @@ set_var(){
     export EGAJIM_NODE_NAME="egajim@127.0.0.1"
     export EGAJIM_COOKIE="xxx"
     export EGAJIM_EJABBERD_PORT="5222"
-    export EGAJIM_EJABBERD_HOST="im.dsmai.com"
-#    export EGAJIM_EJABBERD_HOST="127.0.0.1"
+    export EGAJIM_EJABBERD_HOST="192.168.3.133"
+    #export EGAJIM_EJABBERD_HOST="im.server"
     export EGAJIM_EJABBERD_SERVER="mc"
 
 }
